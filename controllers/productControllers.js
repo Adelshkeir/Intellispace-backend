@@ -110,27 +110,32 @@ class ProductsController {
   static async getProductsByCategory(req, res) {
     try {
       const { categoryName } = req.params;
-
+  
+      if (categoryName.toLowerCase() === 'all') {
+        const products = await Product.findAll();
+        return res.status(200).json(products);
+      }
+  
       const category = await Category.findOne({
         where: {
           name: categoryName
         }
       });
-
+  
       if (!category) {
         return res.status(404).json({ message: "Category not found" });
       }
-
+  
       const products = await Product.findAll({
         where: {
           categoryId: category.id
         }
       });
-
+  
       if (products.length === 0) {
         return res.status(404).json("There are no products in this category");
       }
-
+  
       return res.status(200).json(products);
     } catch (error) {
       return res.status(500).json({ message: error.message });

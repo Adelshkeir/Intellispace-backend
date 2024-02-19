@@ -7,9 +7,11 @@ productRouter.post("/", upload.single("image"),ProductsController.createProduct)
 
 productRouter.get("/", ProductsController.getAllProducts);
 
+productRouter.get("/curators_pick", ProductsController.getCuratorsPickProducts);
+
 productRouter.get("/:categoryName", ProductsController.getProductsByCategory);
 
-productRouter.get("/curators_pick", ProductsController.getCuratorsPickProducts);
+
 
 productRouter.delete("/:id", ProductsController.deleteProduct);
 
