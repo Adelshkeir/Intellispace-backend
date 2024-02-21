@@ -43,15 +43,20 @@ class ReviewsController {
 
   static async getAllReviews(req, res) {
     try {
-      const reviews = await Review.findAll({ include: User }); // Include associated user
-      if (reviews.length === 0) {
-        return res.status(404).json("There are no available reviews");
-      }
-      return res.status(200).json(reviews);
+        const reviews = await Review.findAll({ 
+            include: User // Include associated user
+        });
+
+        if (reviews.length === 0) {
+            return res.status(404).json("There are no available reviews");
+        }
+
+        return res.status(200).json(reviews);
     } catch (error) {
-      return res.status(500).json({ message: error.message });
+        return res.status(500).json({ message: error.message });
     }
-  }
+}
+
 
   static async updateReview(req, res) {
     try {
