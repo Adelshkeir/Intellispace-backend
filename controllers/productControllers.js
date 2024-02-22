@@ -2,7 +2,7 @@ import Product from "../models/productModel.js";
 import Category from "../models/categoryModel.js";
 import { Op } from "sequelize";
 import Review from "../models/reviewModel.js";
-
+import User from "../models/userModel.js";
 class ProductsController {
   static async createProduct(req, res) {
     try {
@@ -165,22 +165,26 @@ class ProductsController {
 
   static async getOneProduct(req, res) {
     try {
-        const { id } = req.params;
+      const { id } = req.params;
 
-        const product = await Product.findByPk(id, {
-            include: Review 
-        });
+      const product = await Product.findByPk(id, {
+        include: [
+          {
+            model: Review,
+            include: [User], // Include User model within Review model
+          },
+        ],
+      });
 
-        if (!product) {
-            return res.status(404).json({ message: "Product not found" });
-        }
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
 
-        return res.status(200).json(product);
+      return res.status(200).json(product);
     } catch (error) {
-        return res.status(500).json({ message: error.message });
+      return res.status(500).json({ message: error.message });
     }
-}
-
+  }
 
 
 }
