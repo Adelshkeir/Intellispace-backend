@@ -7,19 +7,22 @@ class OrderController {
   static async createOrder(req, res) {
     try {
       const { userId, totalAmount, products } = req.body;
-
-
+  
       if (!userId || !totalAmount || !products || !products.length) {
         return res.status(400).json({ message: "Invalid request data" });
       }
-
-
+  
+      const user = await User.findByPk(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+  
       const newOrder = await Order.create({
         userId,
         totalAmount,
       });
-
-
+  
+  
       const orderItems = [];
       for (const product of products) {
         const orderItem = await OrderItem.create({
@@ -30,14 +33,15 @@ class OrderController {
         });
         orderItems.push(orderItem);
       }
-
+  
       newOrder.dataValues.OrderItems = orderItems;
-
+  
       return res.status(201).json({ newOrder });
     } catch (error) {
       return res.status(500).json({ message: error.message });
     }
   }
+  
 
   static async getAllOrders(req, res) {
     try {
