@@ -1,6 +1,5 @@
 import Product from "../models/productModel.js";
 import Category from "../models/categoryModel.js";
-import { Op } from "sequelize";
 import Review from "../models/reviewModel.js";
 import User from "../models/userModel.js";
 class ProductsController {

@@ -1,12 +1,18 @@
 // orderController.js
-import Order from "../models/orderModel.js";
-import OrderItem from "../models/orderitemModel.js";
+
+import { Order, OrderItem } from "../models/index.js";
 import User from "../models/userModel.js";
 
 class OrderController {
   static async createOrder(req, res) {
     try {
+      console.log("Request body:", req.body);
+  
       const { userId, totalAmount, products } = req.body;
+  
+      console.log("userId:", userId);
+      console.log("totalAmount:", totalAmount);
+      console.log("products:", products);
   
       if (!userId || !totalAmount || !products || !products.length) {
         return res.status(400).json({ message: "Invalid request data" });
@@ -17,11 +23,14 @@ class OrderController {
         return res.status(404).json({ message: "User not found" });
       }
   
+      console.log("User:", user);
+  
       const newOrder = await Order.create({
         userId,
         totalAmount,
       });
   
+      console.log("New Order:", newOrder);
   
       const orderItems = [];
       for (const product of products) {
@@ -34,18 +43,22 @@ class OrderController {
         orderItems.push(orderItem);
       }
   
-      newOrder.dataValues.OrderItems = orderItems;
+      console.log("Order Items:", orderItems);
+  
+      // Manually set association between Order and OrderItem
+      newOrder.orderItems = orderItems;
   
       return res.status(201).json({ newOrder });
     } catch (error) {
+      console.error("Error in createOrder:", error);
       return res.status(500).json({ message: error.message });
     }
   }
-  
 
   static async getAllOrders(req, res) {
     try {
       const orders = await Order.findAll({ include: OrderItem });
+
       if (orders.length === 0) {
         return res.status(404).json("There are no available orders");
       }

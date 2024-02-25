@@ -4,7 +4,7 @@ import { DataTypes } from "sequelize";
 import OrderItem from "./orderitemModel.js";
 import User from "./userModel.js";
 
-const Order = sequelize.define('Order', {
+export default  sequelize.define('Order', {
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -22,14 +22,3 @@ const Order = sequelize.define('Order', {
 });
 
 
-
-Order.belongsTo(User, { foreignKey: 'userId' });
-
-
-
-Order.hasMany(OrderItem, { foreignKey: 'orderId' });
-OrderItem.belongsTo(Order, { foreignKey: 'orderId' });
-
-Order.sync();
-
-export default Order;
