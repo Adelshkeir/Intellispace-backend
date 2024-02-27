@@ -55,14 +55,15 @@ class ProductsController {
     }
   }
 
-  static async updateProduct(req, res) {
+  static async updateProduct(req, res) {  
+    console.log(req.body)
     try {
       const { id } = req.params;
-      const { name, price, description, image, curators_pick, categoryId } =
+      const { name, price, description,  curators_pick } =
         req.body;
       const errors = [];
 
-      if (!name || !price || !description || !image || !categoryId) {
+      if (!name || !price || !description  ) {
         errors.push("All fields are required");
       }
 
@@ -79,9 +80,8 @@ class ProductsController {
       product.name = name;
       product.price = price;
       product.description = description;
-      product.image = image;
       product.curators_pick = curators_pick;
-      product.categoryId = categoryId;
+
       await product.save();
 
       return res.status(200).json({ product });

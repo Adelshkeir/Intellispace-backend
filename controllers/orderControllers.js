@@ -57,7 +57,7 @@ class OrderController {
 
   static async getAllOrders(req, res) {
     try {
-      const orders = await Order.findAll({ include: { model: OrderItem } });
+      const orders = await Order.findAll();
   
       if (orders.length === 0) {
         return res.status(404).json("There are no available orders");
