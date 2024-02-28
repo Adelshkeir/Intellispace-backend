@@ -31,12 +31,13 @@ class OrderController {
       });
   
       console.log("New Order:", newOrder);
-  
+      console.log("products:", products);
+
       const orderItems = [];
       for (const product of products) {
         const orderItem = await OrderItem.create({
           orderId: newOrder.id,
-          productId: product.productId,
+          productId: product.id,
           price: product.price,
           quantity: product.quantity,
         });

@@ -1,5 +1,5 @@
 // orderItemController.js
-
+import Product from "../models/productModel.js";
 import { OrderItem } from "../models/index.js";
 
 const orderItemController = {
@@ -11,6 +11,7 @@ const orderItemController = {
         where: {
           orderId: orderId,
         },
+        include: Product, 
       });
 
       if (orderItems.length === 0) {
