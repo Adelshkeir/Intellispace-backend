@@ -1,10 +1,21 @@
 import { Sequelize } from "sequelize";
-
-const sequelize = new Sequelize("final", "root", "", {
-  host: "localhost",
-  dialect: "mysql",
-  port: "3307",
-});
+import pg from "pg";
+const DB_URI = process.env.DB_URI;
+console.log(DB_URI);
+const sequelize = new Sequelize(
+  "postgres://postgres:eMq8f!6Pr9yUE2F@uqkhbksarmcusxmdboyh.db.eu-central-1.nhost.run:5432/uqkhbksarmcusxmdboyh",
+  {
+    dialectModule: pg,
+  }
+  // "uqkhbksarmcusxmdboyh",
+  // "postgres",
+  // "eMq8f!6Pr9yUE2F",
+  // {
+  //   host: "uqkhbksarmcusxmdboyh.db.eu-central-1.nhost.run",
+  //   dialect: "postgres",
+  //   port: "5432",
+  // }
+);
 try {
   console.log("Connection has been established successfully.");
 } catch (error) {

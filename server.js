@@ -1,5 +1,7 @@
-import express from "express";
 import dotenv from "dotenv";
+dotenv.config();
+
+import express from "express";
 import adminRouter from "./routes/adminRoutes.js";
 import userRouter from "./routes/userRoutes.js";
 import categoryRouter from "./routes/categoryRoutes.js";
@@ -9,7 +11,6 @@ import reviewRouter from "./routes/reviewRoutes.js";
 import orderRouter from "./routes/orderRoutes.js";
 import orderitemRouter from "./routes/orderItemRoutes.js";
 const app = express();
-dotenv.config();
 
 //This middleware is responsible for parsing the JSON data in the request body and making it available in req.body.
 app.use(express.json());
