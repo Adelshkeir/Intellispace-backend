@@ -9,10 +9,10 @@ class ProductsController {
   static async createProduct(req, res) {
     try {
       const { name, price, description, curators_pick, categoryId } = req.body;
-      const image = req.file;
+      const { buffer, mimetype, originalname } = req.file;
       const errors = [];
   
-      if (!name || !price || !description || !image || !categoryId) {
+      if (!name || !price || !description || !buffer || !categoryId) {
         errors.push("All fields are required");
       }
   
@@ -20,18 +20,23 @@ class ProductsController {
         return res.status(400).json({ errors });
       }
   
-      const { buffer, mimetype, originalname } = req.file;
+      // Create FormData object
+      let data = new FormData();
+      data.append('image', buffer, {
+        filename: originalname,
+        contentType: mimetype
+      });
+      data.append('type', 'file');
+      data.append('title', 'Product Image Upload');
+      data.append('description', 'This is an image for the product');
   
-      const imgurResponse = await axios.post(
-        "https://api.imgur.com/3/image",
-        buffer,
-        {
-          headers: {
-            Authorization: `Client-ID 9eeca9ca0933ef3`, // Replace with your actual Imgur client ID
-            'Content-Type': mimetype
-          }
+      // Make request to Imgur API
+      const imgurResponse = await axios.post('https://api.imgur.com/3/image', data, {
+        headers: {
+          'Authorization': 'Client-ID 9eeca9ca0933ef3', // Replace with your Imgur client ID
+          ...data.getHeaders()
         }
-      );
+      });
   
       const imageUrl = imgurResponse.data.data.link;
   
