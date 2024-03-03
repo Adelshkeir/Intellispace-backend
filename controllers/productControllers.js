@@ -4,67 +4,58 @@ import Review from "../models/reviewModel.js";
 import User from "../models/userModel.js";
 import fs from "fs";
 import axios from "axios";
+import FormData from "form-data";
 class ProductsController {
-
   static async createProduct(req, res) {
     try {
-      upload(req, res, async function (err) {
-        if (err instanceof multer.MulterError) {
-          return res.status(400).json({ error: 'File upload error' });
-        } else if (err) {
-          return res.status(500).json({ error: err.message });
-        }
+      const { name, price, description, curators_pick, categoryId } = req.body;
+      const image = req.file;
+      const errors = [];
   
-        const { name, price, description, curators_pick, categoryId } = req.body;
-        const image = req.file;
-        const errors = [];
+      if (!name || !price || !description || !image || !categoryId) {
+        errors.push("All fields are required");
+      }
   
-        if (!name || !price || !description || !image || !categoryId) {
-          errors.push("All fields are required");
-        }
+      if (errors.length > 0) {
+        return res.status(400).json({ errors });
+      }
   
-        if (errors.length > 0) {
-          return res.status(400).json({ errors });
-        }
+      const { buffer, mimetype, originalname } = req.file;
   
-        const imageData = fs.readFileSync(image.path);
-        const imgurClientId = '9eeca9ca0933ef3'; 
-
-        const imgurResponse = await axios.post(
-          "https://api.imgur.com/3/image",
-          imageData,
-          {
-            headers: {
-              Authorization: `Client-ID ${imgurClientId}`,
-              'Content-Type': image.mimetype
-            }
+      const imgurResponse = await axios.post(
+        "https://api.imgur.com/3/image",
+        buffer,
+        {
+          headers: {
+            Authorization: `Client-ID 9eeca9ca0933ef3`, // Replace with your actual Imgur client ID
+            'Content-Type': mimetype
           }
-        );
-        
-  
-        const imageUrl = imgurResponse.data.data.link;
-  
-        const newProduct = await Product.create({
-          name,
-          price,
-          description,
-          image: imageUrl,
-          curators_pick,
-          categoryId,
-        });
-  
-        if (!newProduct) {
-          errors.push("Error creating product");
-          return res.status(500).json({ errors });
         }
+      );
   
-        return res.status(201).json({ newProduct });
+      const imageUrl = imgurResponse.data.data.link;
+  
+      const newProduct = await Product.create({
+        name,
+        price,
+        description,
+        image: imageUrl,
+        curators_pick,
+        categoryId,
       });
+  
+      if (!newProduct) {
+        errors.push("Error creating product");
+        return res.status(500).json({ errors });
+      }
+  
+      return res.status(201).json({ newProduct });
     } catch (error) {
       console.error('Error creating product:', error);
-      return res.status(500).json({ error: 'Internal Server Error' });
+      return res.status(500).json({ message: 'Internal Server Error' });
     }
   }
+  
 
   static async getAllProducts(req, res) {
     try {
