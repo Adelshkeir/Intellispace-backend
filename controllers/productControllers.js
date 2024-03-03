@@ -5,55 +5,62 @@ import User from "../models/userModel.js";
 import fs from "fs";
 import axios from "axios";
 class ProductsController {
+
   static async createProduct(req, res) {
     try {
-      const { name, price, description, curators_pick, categoryId } = req.body;
-      const image = req.file;
-      const errors = [];
-
-      if (!name || !price || !description || !image || !categoryId) {
-        errors.push("All fields are required");
-      }
-
-      if (errors.length > 0) {
-        return res.status(400).json({ errors });
-      }
-
-      const imageData = fs.readFileSync(image.path);
-
-      const freeImageResponse = await axios.post(
-        "https://freeimage.host/api/1/upload",
-        {
-          key: "6d207e02198a847aa98d0a2a901485a5",
-          action: "upload",
-          source: imageData.toString("base64"),
-          format: "json",
+      upload(req, res, async function (err) {
+        if (err instanceof multer.MulterError) {
+          return res.status(400).json({ error: 'File upload error' });
+        } else if (err) {
+          return res.status(500).json({ error: err.message });
         }
-      );
-
-      const imageUrl = freeImageResponse.data.image.url;
-
-      const newProduct = await Product.create({
-        name,
-        price,
-        description,
-        image: imageUrl,
-        curators_pick,
-        categoryId,
+  
+        const { name, price, description, curators_pick, categoryId } = req.body;
+        const image = req.file;
+        const errors = [];
+  
+        if (!name || !price || !description || !image || !categoryId) {
+          errors.push("All fields are required");
+        }
+  
+        if (errors.length > 0) {
+          return res.status(400).json({ errors });
+        }
+  
+        const imageData = fs.readFileSync(image.path);
+  
+        const imgurResponse = await axios.post(
+          "https://api.imgur.com/3/image",
+          imageData,
+          {
+            headers: {
+              Authorization: `Client-ID ${process.env.IMGUR_CLIENT_ID}`, // Replace with your Imgur client ID
+              'Content-Type': image.mimetype
+            }
+          }
+        );
+  
+        const imageUrl = imgurResponse.data.data.link;
+  
+        const newProduct = await Product.create({
+          name,
+          price,
+          description,
+          image: imageUrl,
+          curators_pick,
+          categoryId,
+        });
+  
+        if (!newProduct) {
+          errors.push("Error creating product");
+          return res.status(500).json({ errors });
+        }
+  
+        return res.status(201).json({ newProduct });
       });
-
-      if (!newProduct) {
-        errors.push("Error creating product");
-        return res.status(500).json({ errors });
-      }
-
-      return res.status(201).json({ newProduct });
     } catch (error) {
-      console.log("=====================================");
-      console.log(JSON.stringify(error));
-      console.log(error.message);
-      console.log("=====================================");
-      return res.status(500).json({ message: error.message });
+      console.error('Error creating product:', error);
+      return res.status(500).json({ error: 'Internal Server Error' });
     }
   }
 
