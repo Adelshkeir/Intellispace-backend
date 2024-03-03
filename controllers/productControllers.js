@@ -49,7 +49,10 @@ class ProductsController {
 
       return res.status(201).json({ newProduct });
     } catch (error) {
-      console.log(error);
+      console.log("=====================================");
+      console.log(JSON.stringify(error));
+      console.log(error.message);
+      console.log("=====================================");
       return res.status(500).json({ message: error.message });
     }
   }
