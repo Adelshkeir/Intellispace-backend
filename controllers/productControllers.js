@@ -12,11 +12,15 @@ class ProductsController {
       const { buffer, mimetype, originalname } = req.file;
       const errors = [];
   
+      console.log('Received request body:', req.body);
+      console.log('Received file:', req.file);
+  
       if (!name || !price || !description || !buffer || !categoryId) {
         errors.push("All fields are required");
       }
   
       if (errors.length > 0) {
+        console.log('Validation errors:', errors);
         return res.status(400).json({ errors });
       }
   
@@ -31,6 +35,7 @@ class ProductsController {
       data.append('description', 'This is an image for the product');
   
       // Make request to Imgur API
+      console.log('Uploading image to Imgur...');
       const imgurResponse = await axios.post('https://api.imgur.com/3/image', data, {
         headers: {
           'Authorization': 'Client-ID 9eeca9ca0933ef3', // Replace with your Imgur client ID
@@ -39,6 +44,7 @@ class ProductsController {
       });
   
       const imageUrl = imgurResponse.data.data.link;
+      console.log('Uploaded image URL:', imageUrl);
   
       const newProduct = await Product.create({
         name,
@@ -51,15 +57,18 @@ class ProductsController {
   
       if (!newProduct) {
         errors.push("Error creating product");
+        console.error('Error creating product: Product creation failed');
         return res.status(500).json({ errors });
       }
   
+      console.log('Product created successfully:', newProduct);
       return res.status(201).json({ newProduct });
     } catch (error) {
       console.error('Error creating product:', error);
       return res.status(500).json({ message: 'Internal Server Error' });
     }
   }
+  
   
 
   static async getAllProducts(req, res) {
