@@ -12,6 +12,8 @@ class ProductsController {
       console.log('Request file:', req.file);
 
       const { buffer, mimetype, originalname } = req.file;
+      console.log('Received file buffer:', buffer);
+
       const errors = [];
   
       console.log('Received request body:', req.body);
