@@ -28,17 +28,19 @@ class ProductsController {
         }
   
         const imageData = fs.readFileSync(image.path);
-  
+        const imgurClientId = '9eeca9ca0933ef3'; 
+
         const imgurResponse = await axios.post(
           "https://api.imgur.com/3/image",
           imageData,
           {
             headers: {
-              Authorization: `Client-ID ${process.env.IMGUR_CLIENT_ID}`, // Replace with your Imgur client ID
+              Authorization: `Client-ID ${imgurClientId}`,
               'Content-Type': image.mimetype
             }
           }
         );
+        
   
         const imageUrl = imgurResponse.data.data.link;
   
