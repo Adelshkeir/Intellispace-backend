@@ -9,6 +9,8 @@ class ProductsController {
   static async createProduct(req, res) {
     try {
       const { name, price, description, curators_pick, categoryId } = req.body;
+      console.log('Request file:', req.file);
+
       const { buffer, mimetype, originalname } = req.file;
       const errors = [];
   
@@ -39,7 +41,7 @@ class ProductsController {
       console.log('Uploading image to Imgur...');
       const imgurResponse = await axios.post('https://api.imgur.com/3/image', data, {
         headers: {
-          'Authorization': 'Client-ID 9eeca9ca0933ef3', // Replace with your Imgur client ID
+          'Authorization': 'Client-ID 9eeca9ca0933ef3', 
           ...data.getHeaders()
         }
       });
