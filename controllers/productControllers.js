@@ -15,7 +15,8 @@ class ProductsController {
       console.log('Received request body:', req.body);
       console.log('Received file:', req.file);
   
-      if (!name || !price || !description  || !categoryId) {
+      // Validate request body
+      if (!name || !price || !description || !categoryId) {
         errors.push("All fields are required");
       }
   
@@ -43,9 +44,15 @@ class ProductsController {
         }
       });
   
+      if (!imgurResponse.data || !imgurResponse.data.data || !imgurResponse.data.data.link) {
+        throw new Error("Invalid response from Imgur API");
+      }
+  
       const imageUrl = imgurResponse.data.data.link;
       console.log('Uploaded image URL:', imageUrl);
   
+      // Create new product
+      console.log('Creating new product...');
       const newProduct = await Product.create({
         name,
         price,
@@ -56,9 +63,7 @@ class ProductsController {
       });
   
       if (!newProduct) {
-        errors.push("Error creating product");
-        console.error('Error creating product: Product creation failed');
-        return res.status(500).json({ errors });
+        throw new Error("Failed to create product");
       }
   
       console.log('Product created successfully:', newProduct);
@@ -68,6 +73,7 @@ class ProductsController {
       return res.status(500).json({ message: 'Internal Server Error' });
     }
   }
+  
   
   
 
