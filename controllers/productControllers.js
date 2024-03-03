@@ -3,6 +3,7 @@ import Category from "../models/categoryModel.js";
 import Review from "../models/reviewModel.js";
 import User from "../models/userModel.js";
 import fs from "fs";
+import axios from "axios";
 class ProductsController {
   static async createProduct(req, res) {
     try {
