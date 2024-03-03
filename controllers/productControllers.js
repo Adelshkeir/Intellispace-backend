@@ -2,11 +2,12 @@ import Product from "../models/productModel.js";
 import Category from "../models/categoryModel.js";
 import Review from "../models/reviewModel.js";
 import User from "../models/userModel.js";
+import fs from "fs";
 class ProductsController {
   static async createProduct(req, res) {
     try {
       const { name, price, description, curators_pick, categoryId } = req.body;
-      const image = req.file; // Assuming req.file contains the uploaded image path
+      const image = req.file;
       const errors = [];
 
       if (!name || !price || !description || !image || !categoryId) {
@@ -17,25 +18,35 @@ class ProductsController {
         return res.status(400).json({ errors });
       }
 
-      try {
-        const newProduct = await Product.create({
-          name,
-          price,
-          description,
-          image: image.path,
-          curators_pick,
-          categoryId,
-        });
+      const imageData = fs.readFileSync(image.path);
 
-        if (!newProduct) {
-          errors.push("Error creating product");
-          return res.status(500).json({ errors });
+      const freeImageResponse = await axios.post(
+        "https://freeimage.host/api/1/upload",
+        {
+          key: "6d207e02198a847aa98d0a2a901485a5",
+          action: "upload",
+          source: imageData.toString("base64"),
+          format: "json",
         }
+      );
 
-        return res.status(201).json({ newProduct });
-      } catch (sequelizeError) {
-        return res.status(500).json({ message: sequelizeError.message });
+      const imageUrl = freeImageResponse.data.image.url;
+
+      const newProduct = await Product.create({
+        name,
+        price,
+        description,
+        image: imageUrl,
+        curators_pick,
+        categoryId,
+      });
+
+      if (!newProduct) {
+        errors.push("Error creating product");
+        return res.status(500).json({ errors });
       }
+
+      return res.status(201).json({ newProduct });
     } catch (error) {
       return res.status(500).json({ message: error.message });
     }
@@ -55,15 +66,14 @@ class ProductsController {
     }
   }
 
-  static async updateProduct(req, res) {  
-    console.log(req.body)
+  static async updateProduct(req, res) {
+    console.log(req.body);
     try {
       const { id } = req.params;
-      const { name, price, description,  curators_pick } =
-        req.body;
+      const { name, price, description, curators_pick } = req.body;
       const errors = [];
 
-      if (!name || !price || !description  ) {
+      if (!name || !price || !description) {
         errors.push("All fields are required");
       }
 
@@ -184,8 +194,6 @@ class ProductsController {
       return res.status(500).json({ message: error.message });
     }
   }
-
-
 }
 
 export default ProductsController;
