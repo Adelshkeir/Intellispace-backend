@@ -15,7 +15,7 @@ class ProductsController {
       console.log('Received request body:', req.body);
       console.log('Received file:', req.file);
   
-      if (!name || !price || !description || !buffer || !categoryId) {
+      if (!name || !price || !description  || !categoryId) {
         errors.push("All fields are required");
       }
   
