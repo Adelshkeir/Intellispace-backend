@@ -18,6 +18,13 @@ class ProductsController {
         return res.status(400).json({ errors });
       }
 
+      // Configure Cloudinary with API key
+      cloudinary.config({
+        cloud_name: 'dndveiiam',
+        api_key: '438283895288339',
+        api_secret: '7t00ka7usBz8lKwXDxdApIfDaCw'
+      });
+
       // Upload image to Cloudinary
       cloudinary.uploader.upload_stream({ folder: 'your_folder_name' }, async (error, result) => {
         if (error) {
