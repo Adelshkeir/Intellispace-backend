@@ -2,6 +2,7 @@ import Product from "../models/productModel.js";
 import Category from "../models/categoryModel.js";
 import Review from "../models/reviewModel.js";
 import User from "../models/userModel.js";
+const cloudinary = require('cloudinary').v2;
 class ProductsController {
   static async createProduct(req, res) {
     try {
@@ -17,25 +18,32 @@ class ProductsController {
         return res.status(400).json({ errors });
       }
 
-      try {
-        const newProduct = await Product.create({
-          name,
-          price,
-          description,
-          image: image.path,
-          curators_pick,
-          categoryId,
-        });
-
-        if (!newProduct) {
-          errors.push("Error creating product");
-          return res.status(500).json({ errors });
+      // Upload image to Cloudinary
+      cloudinary.uploader.upload_stream({ folder: 'your_folder_name' }, async (error, result) => {
+        if (error) {
+          return res.status(500).json({ error: 'Image upload failed' });
         }
 
-        return res.status(201).json({ newProduct });
-      } catch (sequelizeError) {
-        return res.status(500).json({ message: sequelizeError.message });
-      }
+        try {
+          const newProduct = await Product.create({
+            name,
+            price,
+            description,
+            image: result.secure_url, // Use the secure URL provided by Cloudinary
+            curators_pick,
+            categoryId,
+          });
+
+          if (!newProduct) {
+            errors.push("Error creating product");
+            return res.status(500).json({ errors });
+          }
+
+          return res.status(201).json({ newProduct });
+        } catch (sequelizeError) {
+          return res.status(500).json({ message: sequelizeError.message });
+        }
+      }).end(image.buffer); // Assuming the uploaded image data is in req.file.buffer
     } catch (error) {
       return res.status(500).json({ message: error.message });
     }
