@@ -20,14 +20,15 @@ class ProductsController {
       }
 
       // Configure Cloudinary with API key
-      cloudinary.config({
+      cloudinary.v2.config({
         cloud_name: 'dndveiiam',
         api_key: '438283895288339',
-        api_secret: '7t00ka7usBz8lKwXDxdApIfDaCw'
+        api_secret: '7t00ka7usBz8lKwXDxdApIfDaCw',
+        secure: true,
       });
 
       // Upload image to Cloudinary
-      cloudinary.uploader.upload_stream({ folder: 'your_folder_name' }, async (error, result) => {
+      cloudinary.uploader.upload_stream({ folder: 'intelispace' }, async (error, result) => {
         if (error) {
           return res.status(500).json({ error: 'Image upload failed' });
         }
