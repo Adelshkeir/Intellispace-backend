@@ -20,7 +20,7 @@ class ProductsController {
       }
 
       // Configure Cloudinary with API key
-      cloudinary.v2.config({
+      cloudinary.config({
         cloud_name: 'dndveiiam',
         api_key: '438283895288339',
         api_secret: '7t00ka7usBz8lKwXDxdApIfDaCw',
