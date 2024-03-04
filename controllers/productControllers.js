@@ -6,8 +6,7 @@ import User from "../models/userModel.js";
 class ProductsController {
   static async createProduct(req, res) {
     try {
-      const { name, price, description, curators_pick, categoryId } = req.body;
-      const image = req.file; // Assuming req.file contains the uploaded image path
+      const { name, price, description, image, categoryId } = req.body;
       const errors = [];
 
       if (!name || !price || !description || !image || !categoryId) {
@@ -23,8 +22,7 @@ class ProductsController {
           name,
           price,
           description,
-          image: image.path,
-          curators_pick,
+          image: image, // Use the received image URL
           categoryId,
         });
 
@@ -41,6 +39,7 @@ class ProductsController {
       return res.status(500).json({ message: error.message });
     }
   }
+
 
   static async getAllProducts(req, res) {
     try {
