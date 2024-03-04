@@ -1,7 +1,9 @@
+ 
 import Product from "../models/productModel.js";
 import Category from "../models/categoryModel.js";
 import Review from "../models/reviewModel.js";
 import User from "../models/userModel.js";
+import { v2 as cloudinary } from 'cloudinary';
 class ProductsController {
   static async createProduct(req, res) {
     try {
@@ -17,25 +19,39 @@ class ProductsController {
         return res.status(400).json({ errors });
       }
 
-      try {
-        const newProduct = await Product.create({
-          name,
-          price,
-          description,
-          image: image.path,
-          curators_pick,
-          categoryId,
-        });
+      // Configure Cloudinary with API key
+      cloudinary.config({
+        cloud_name: 'dndveiiam',
+        api_key: '438283895288339',
+        api_secret: '7t00ka7usBz8lKwXDxdApIfDaCw'
+      });
 
-        if (!newProduct) {
-          errors.push("Error creating product");
-          return res.status(500).json({ errors });
+      // Upload image to Cloudinary
+      cloudinary.uploader.upload_stream({ folder: 'your_folder_name' }, async (error, result) => {
+        if (error) {
+          return res.status(500).json({ error: 'Image upload failed' });
         }
 
-        return res.status(201).json({ newProduct });
-      } catch (sequelizeError) {
-        return res.status(500).json({ message: sequelizeError.message });
-      }
+        try {
+          const newProduct = await Product.create({
+            name,
+            price,
+            description,
+            image: result.secure_url, // Use the secure URL provided by Cloudinary
+            curators_pick,
+            categoryId,
+          });
+
+          if (!newProduct) {
+            errors.push("Error creating product");
+            return res.status(500).json({ errors });
+          }
+
+          return res.status(201).json({ newProduct });
+        } catch (sequelizeError) {
+          return res.status(500).json({ message: sequelizeError.message });
+        }
+      }).end(image.buffer); // Assuming the uploaded image data is in req.file.buffer
     } catch (error) {
       return res.status(500).json({ message: error.message });
     }
@@ -55,7 +71,7 @@ class ProductsController {
     }
   }
 
-  static async updateProduct(req, res) {  
+  static async updateProduct(req, res) {
     console.log(req.body)
     try {
       const { id } = req.params;
