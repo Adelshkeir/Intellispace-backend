@@ -2,7 +2,7 @@ import Product from "../models/productModel.js";
 import Category from "../models/categoryModel.js";
 import Review from "../models/reviewModel.js";
 import User from "../models/userModel.js";
-const cloudinary = require('cloudinary').v2;
+import { v2 as cloudinary } from 'cloudinary';
 class ProductsController {
   static async createProduct(req, res) {
     try {
