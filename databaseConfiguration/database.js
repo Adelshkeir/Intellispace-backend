@@ -1,9 +1,8 @@
 import { Sequelize } from "sequelize";
 import pg from "pg";
-const DB_URI = process.env.DB_URI;
-console.log(DB_URI);
+
 const sequelize = new Sequelize(
-  "postgres://postgres:Kaisel1123121@uqkhbksarmcusxmdboyh.db.eu-central-1.nhost.run:5432/uqkhbksarmcusxmdboyh",
+  "postgres://postgres:jgV7RbgsMUHRuT2s@tzkdkkpzvlujpjvjpsqu.db.eu-central-1.nhost.run:5432/tzkdkkpzvlujpjvjpsqu",
   {
     dialectModule: pg,
   }
